@@ -1,0 +1,15 @@
+/* No scrolling allowed, background is beige */
+body {
+  background-color: beige;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+body::-webkit-scrollbar {
+  display: none;
+}
+/* center the content in game div */
+#game {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
