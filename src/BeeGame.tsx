@@ -32,15 +32,6 @@ const BeeGame = () => {
   const beeSize = 120;
   const beeCenter = { x: 400, y: 300 };
 
-  // // Function to check for wall collisions
-  // const checkCollision = (newWalls) => {
-  //   return newWalls.some(wall =>
-  //     beeCenter.x + beeSize / 2 > wall.x &&
-  //     beeCenter.x - beeSize / 2 < wall.x + wall.width &&
-  //     beeCenter.y + beeSize / 2 > wall.y &&
-  //     beeCenter.y - beeSize / 2 < wall.y + wall.height
-  //   );
-  // };
   // Define a tolerance value; positive values make collision detection more forgiving,
   // negative values make it more strict.
   const collisionTolerance = 40; // Adjust this value as needed
