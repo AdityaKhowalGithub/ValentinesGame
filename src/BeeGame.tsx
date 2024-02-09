@@ -3,26 +3,24 @@ import beeImageSrc from "./assets/Bee.png";
 
 const BeeGame = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [gameState, setGameState] = useState("loading"); // Game states: 'loading', 'playing', 'stopped'
   const [mazeWalls, setMazeWalls] = useState([
-    { x: 300, y: 100, width: 1400, height: 40 }, // Top border
-    { x: 300, y: 900, width: 1400, height: 40 }, // Bottom border
-    { x: 300, y: 100, width: 40, height: 800 }, // Left border
-    { x: 1700, y: 100, width: 40, height: 800 }, // Right border
-    // Existing walls
+    { x: 300, y: 100, width: 1400, height: 40 },
+    { x: 300, y: 900, width: 1400, height: 40 },
+    { x: 300, y: 100, width: 40, height: 800 },
+    { x: 1700, y: 100, width: 40, height: 800 },
     { x: 600, y: 100, width: 40, height: 500 },
     { x: 600, y: 600, width: 500, height: 40 },
-    // Additional walls for complexity
-    { x: 900, y: 200, width: 40, height: 400 }, // Vertical wall
-    { x: 900, y: 200, width: 400, height: 40 }, // Horizontal wall towards the right
-    { x: 1260, y: 200, width: 40, height: 550 }, // Vertical wall on the right, creating a passage
-    { x: 940, y: 710, width: 320, height: 40 }, // Horizontal wall below the passage
-    { x: 1000, y: 400, width: 300, height: 40 }, // Additional horizontal wall for a dead end
-    // You can adjust these walls or add more to increase complexity
+    { x: 900, y: 200, width: 40, height: 400 },
+    { x: 900, y: 200, width: 400, height: 40 },
+    { x: 1260, y: 200, width: 40, height: 550 },
+    { x: 940, y: 710, width: 320, height: 40 },
+    { x: 1000, y: 400, width: 300, height: 40 },
   ]);
 
   const [endGoal, setEndGoal] = useState({
-    x: 1600, // Moved slightly if needed to fit the new layout
-    y: 150,
+    x: 1600,
+    y: 100,
     width: 100,
     height: 100,
   });
@@ -31,12 +29,8 @@ const BeeGame = () => {
   const beeSpeed = 20;
   const beeSize = 120;
   const beeCenter = { x: 400, y: 300 };
+  const collisionTolerance = 40;
 
-  // Define a tolerance value; positive values make collision detection more forgiving,
-  // negative values make it more strict.
-  const collisionTolerance = 40; // Adjust this value as needed
-
-  // Function to check for wall collisions with tolerance
   const checkCollision = (newWalls) => {
     return newWalls.some(
       (wall) =>
@@ -52,6 +46,18 @@ const BeeGame = () => {
     const context = canvas?.getContext("2d");
     const beeImage = new Image();
     beeImage.src = beeImageSrc;
+
+    const renderLoadingScreen = () => {
+      if (context) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "beige";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "black";
+        context.font = "30px Arial";
+        context.fillText("Press S to Start", 250, 250);
+        context.fillText("Press X to Exit", 250, 300);
+      }
+    };
 
     const render = () => {
       if (context && canvas) {
@@ -89,10 +95,15 @@ const BeeGame = () => {
       }
     };
 
-    beeImage.onload = render;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!gameWon) {
+    const handleKeyDown = (event) => {
+      if (gameState === "loading") {
+        if (event.key === "s") {
+          setGameState("playing");
+          render(); // Call render to ensure the game starts as soon as 'S' is pressed.
+        } else if (event.key === "x") {
+          setGameState("stopped");
+        }
+      } else if (gameState === "playing") {
         let deltaX = 0;
         let deltaY = 0;
 
@@ -111,14 +122,12 @@ const BeeGame = () => {
             break;
         }
 
-        // Calculate new positions for walls and end goal
         const newWalls = mazeWalls.map((wall) => ({
           ...wall,
           x: wall.x - deltaX,
           y: wall.y - deltaY,
         }));
 
-        // Check for collisions with the new wall positions
         if (!checkCollision(newWalls)) {
           const newEndGoal = {
             ...endGoal,
@@ -129,7 +138,6 @@ const BeeGame = () => {
           setMazeWalls(newWalls);
           setEndGoal(newEndGoal);
 
-          // Check if the bee has reached the end goal
           if (
             beeCenter.x + beeSize / 2 > newEndGoal.x &&
             beeCenter.x - beeSize / 2 < newEndGoal.x + newEndGoal.width &&
@@ -144,8 +152,16 @@ const BeeGame = () => {
 
     window.addEventListener("keydown", handleKeyDown);
 
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [mazeWalls, gameWon, endGoal]);
+    if (gameState === "loading") {
+      renderLoadingScreen();
+    } else if (gameState === "playing") {
+      beeImage.onload = render;
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [gameState, mazeWalls, gameWon, endGoal]);
 
   return <canvas ref={canvasRef} width={800} height={600} />;
 };

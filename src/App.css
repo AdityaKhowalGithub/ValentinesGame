@@ -7,9 +7,25 @@ body {
 body::-webkit-scrollbar {
   display: none;
 }
-/* center the content in game div */
+
 #game {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh; /* This makes sure that your game container takes the full viewport height */
+}
+.game {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* This makes sure that your game container takes the full viewport height */
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Prevents scrolling */
 }
