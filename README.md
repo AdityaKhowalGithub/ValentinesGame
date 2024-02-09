@@ -1,4 +1,9 @@
-# React + TypeScript + Vite
+# Valentines Bee Game
+
+Web app game built with React and Typescript. Move your bee around the maze and find the green square.
+
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
