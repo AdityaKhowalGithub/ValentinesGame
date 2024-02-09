@@ -22,7 +22,7 @@ const BeeGame = () => {
 
   const [endGoal, setEndGoal] = useState({
     x: 1600, // Moved slightly if needed to fit the new layout
-    y: 800,
+    y: 150,
     width: 100,
     height: 100,
   });
