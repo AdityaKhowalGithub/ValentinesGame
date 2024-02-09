@@ -285,8 +285,8 @@
 // };
 
 // export default BeeGame;
-import React, { useRef, useEffect, useState } from 'react';
-import beeImageSrc from './assets/Bee.png';
+import React, { useRef, useEffect, useState } from "react";
+import beeImageSrc from "./assets/Bee.png";
 
 const BeeGame = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -317,32 +317,46 @@ const BeeGame = () => {
     { x: 1000, y: 400, width: 300, height: 40 }, // Additional horizontal wall for a dead end
     // You can adjust these walls or add more to increase complexity
   ]);
-  
+
   const [endGoal, setEndGoal] = useState({
     x: 1600, // Moved slightly if needed to fit the new layout
     y: 800,
     width: 100,
     height: 100,
   });
-  
+
   const [gameWon, setGameWon] = useState(false);
   const beeSpeed = 20;
   const beeSize = 120;
   const beeCenter = { x: 400, y: 300 };
 
-  // Function to check for wall collisions
+  // // Function to check for wall collisions
+  // const checkCollision = (newWalls) => {
+  //   return newWalls.some(wall =>
+  //     beeCenter.x + beeSize / 2 > wall.x &&
+  //     beeCenter.x - beeSize / 2 < wall.x + wall.width &&
+  //     beeCenter.y + beeSize / 2 > wall.y &&
+  //     beeCenter.y - beeSize / 2 < wall.y + wall.height
+  //   );
+  // };
+  // Define a tolerance value; positive values make collision detection more forgiving,
+  // negative values make it more strict.
+  const collisionTolerance = 40; // Adjust this value as needed
+
+  // Function to check for wall collisions with tolerance
   const checkCollision = (newWalls) => {
-    return newWalls.some(wall => 
-      beeCenter.x + beeSize / 2 > wall.x &&
-      beeCenter.x - beeSize / 2 < wall.x + wall.width &&
-      beeCenter.y + beeSize / 2 > wall.y &&
-      beeCenter.y - beeSize / 2 < wall.y + wall.height
+    return newWalls.some(
+      (wall) =>
+        beeCenter.x + beeSize / 2 - collisionTolerance > wall.x &&
+        beeCenter.x - beeSize / 2 + collisionTolerance < wall.x + wall.width &&
+        beeCenter.y + beeSize / 2 - collisionTolerance > wall.y &&
+        beeCenter.y - beeSize / 2 + collisionTolerance < wall.y + wall.height,
     );
   };
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
+    const context = canvas?.getContext("2d");
     const beeImage = new Image();
     beeImage.src = beeImageSrc;
 
@@ -351,23 +365,33 @@ const BeeGame = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         if (!gameWon) {
-          mazeWalls.forEach(wall => {
-            context.fillStyle = 'brown';
+          mazeWalls.forEach((wall) => {
+            context.fillStyle = "brown";
             context.fillRect(wall.x, wall.y, wall.width, wall.height);
           });
 
-          context.fillStyle = 'lightgreen';
+          context.fillStyle = "lightgreen";
           context.fillRect(endGoal.x, endGoal.y, endGoal.width, endGoal.height);
         }
 
-        context.drawImage(beeImage, beeCenter.x - beeSize / 2, beeCenter.y - beeSize / 2, beeSize, beeSize);
+        context.drawImage(
+          beeImage,
+          beeCenter.x - beeSize / 2,
+          beeCenter.y - beeSize / 2,
+          beeSize,
+          beeSize,
+        );
 
         if (gameWon) {
           context.fillStyle = "pink";
           context.fillRect(0, 0, canvas.width, canvas.height);
           context.fillStyle = "white";
           context.font = "40px Arial";
-          context.fillText("Will you BEEE my valentine?", 100, canvas.height / 2 + 100);
+          context.fillText(
+            "Will you BEEE my valentine?",
+            100,
+            canvas.height / 2 + 100,
+          );
         }
       }
     };
@@ -380,14 +404,22 @@ const BeeGame = () => {
         let deltaY = 0;
 
         switch (event.key) {
-          case 's': deltaY = beeSpeed; break;
-          case 'w': deltaY = -beeSpeed; break;
-          case 'd': deltaX = beeSpeed; break;
-          case 'a': deltaX = -beeSpeed; break;
+          case "s":
+            deltaY = beeSpeed;
+            break;
+          case "w":
+            deltaY = -beeSpeed;
+            break;
+          case "d":
+            deltaX = beeSpeed;
+            break;
+          case "a":
+            deltaX = -beeSpeed;
+            break;
         }
 
         // Calculate new positions for walls and end goal
-        const newWalls = mazeWalls.map(wall => ({
+        const newWalls = mazeWalls.map((wall) => ({
           ...wall,
           x: wall.x - deltaX,
           y: wall.y - deltaY,
@@ -417,9 +449,9 @@ const BeeGame = () => {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mazeWalls, gameWon, endGoal]);
 
   return <canvas ref={canvasRef} width={800} height={600} />;
